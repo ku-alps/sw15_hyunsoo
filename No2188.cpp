@@ -1,5 +1,4 @@
 #include<iostream>
-#include<cstring> // memset 사용 헤더
 #include<vector> //동적할당 (벡터) 사용
 using namespace std;
 // 축사배정
@@ -15,12 +14,14 @@ void Binary_Match();
 int Search(int who);
 
 int main() {
-	memset(isThere, -1, sizeof(isThere)); //모든 방을 -1 (주인없음)으로 세팅
 	cin >> cow >> cage;
 	prefer.resize(cow); // 벡터의 크기 조정
 						// 만일 -1이 아닌 0으로 방을 세팅하면, 소의 index 번호는 0을 피해야한다
 						// = 1부터 시작해야 함
 						// cause, 빈 방을 판단하는 과정에서 0번 소는 방이 비어있는 것과 동등하게 판단되기 때문
+
+	for (int k = 0; k < cage; k++)
+		isThere[k] = -1; // 역참조 주소 초기화
 
 	for (int k = 0; k < cow; k++) {
 		int count;
@@ -39,9 +40,10 @@ int main() {
 void Binary_Match() {
 	int ans = 0; // 정답
 
-	for (int k = 0; k < cage; k++) { // 모든 소들에 대해서 방을 잡아줄 예정
-		memset(visit, 0, sizeof(visit)); // 매번 철창 방문기록은 리셋
-		if (Search(k)) ans++;
+	for (int k = 0; k < cow; k++) { // 모든 소들에 대해서 방을 잡아줄 예정
+		for (int i = 0; i < cow; i++)
+			visit[i] = false;
+		ans += Search(k);
 		// 각 소 별로, 1번씩 방을 잡으려 시도
 		// 성공할 경우 방을 잡은 소의 수가 +1
 		// 아닌 경우는 무시
@@ -54,7 +56,7 @@ int Search(int who) { //해당 소에 대해 방문 시도
 	visit[who] = true; // 방문했다고 표기
 
 	for (int k = 0; k < prefer[who].size(); k++) { // 소가 선호한다고 말한 철창 모두에 대해
-		int room = prefer[who][k]; // 이미 방을 차지하고 있던 소의 정보
+		int room = prefer[who][k] - 1; // 이미 방을 차지하고 있던 소의 정보
 
 		if (isThere[room] == -1 || Search(isThere[room])) {
 			// 방이 비어있거나, 혹은 해당 방을 가진 소를 다른 방으로 옮길 수 있으면
