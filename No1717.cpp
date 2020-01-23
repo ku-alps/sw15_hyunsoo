@@ -1,76 +1,43 @@
-#include<iostream>
+#include <iostream>
+#include<cstdio>
 using namespace std;
-// 집합의 표현
+// 집합의 표현 
+// Union-Find 사용
 
-class Group {
-public:
-	Group* root;
-	Group();
-}; // 포인터 정보를 갖고 있는 그룹
+int arr[1000001]; // 각 노드의 루트
+int N, M;
 
-int total, loop;
-Group group[1000000]; // 각 원소 정보
-
-bool Equal(int a, int b, Group* pa, Group* pb); // 동일 집합 연산
-void Union(int a, int b); // 합집합 연산
+int F(int idx) { // 유니온 파인드 탐색용 재귀 함수
+	if (arr[idx] == idx) return idx; // 해당 집합의 대표값에 도달한 경우 반환
+	int next = arr[idx];
+	return arr[idx] = F(next); // 자신의 상위 정보를 반환받아 자신이 가진 대표값 갱신
+}
 
 int main() {
+	cin >> N >> M;
+	for (int k = 1; k <= N; k++) { // 초기 세팅
+		arr[k] = k;
+	}
 
-	cin >> total >> loop;
+	for (int k = 0; k < M; k++) {
+		int a, b, c;
+		scanf("%d %d %d", &a, &b, &c);
 
-	while (loop--) {
-		bool toDo;
-		int a, b;
-		cin >> toDo >> a >> b; //수행할 연산 및 비교 대상
-
-
-		if (toDo) { // 1인 경우, 단순 확인
-			if (Equal(a, b, NULL, NULL)) //사용하지 않을 예정이므로 NULL 인자
-				cout << "YES\n"; // 동일
+		int b_root = F(b);
+		int c_root = F(c); // 입력 노드의 대표값을 탐색
+		switch (a) { // 수행 명령
+		case 0: // 합치는 경우
+			if (b_root <= c_root) // 두 대표값 중, 작은 쪽으로 연결함
+				arr[c_root] = b_root;
 			else
-				cout << "NO\n"; // 다른 집합
+				arr[b_root] = c_root;
+			break;
+		case 1: // 동일 그룹 판단
+			if (b_root == c_root) printf("YES\n"); // 동일하다면 한 그룹
+			else printf("NO\n"); // 다르면 다른 그룹
+			break;
+		default:
+			break;
 		}
-		else { // 0인 경우, 합집합
-			Union(a, b);
-		}
-	}
-}
-
-Group::Group() {
-	this->root = NULL;
-}
-
-bool Equal(int a, int b, Group* here_a, Group* here_b) {
-	Group* pa = &group[a];
-	Group* pb = &group[b];
-	Group* move = NULL;
-	Group* save = NULL;
-	while (pa->root != NULL) { // NULL이 나올 때 까지 계속 찾음
-		move = save;
-		save = pa;
-		pa = pa->root; // 트리형태를 역으로 쫓아감
-		
-		if(move != NULL) move->root = pa; // NULL이 아니면, 위로 건너 뛸 수 있도록 함
-	}
-
-	save = NULL;
-	while (pb->root != NULL) {
-		move = save;
-		save = pb;
-		pb = pb->root; // b에 대해서도 동일한 방법을 사용
-					   // 거슬러 올라가는 형태의 트리에서, 결국 하나의 집합은 대표값 하나로 모이게 됨
-		if (move != NULL) move->root = pb; // NULL이 아니면, 위로 건너 뛸 수 있도록 함
-	}
-	if (here_a != NULL) here_a = pa;
-	if (here_b != NULL) here_b = pb; // 단순 탐색에서 예외처리
-
-	return pa == pb; //두 위치의 동일 여부를 bool 값으로 return
-}
-
-void Union(int a, int b) {
-	Group *here_a = &group[a], *here_b = &group[b];
-	if (!Equal(a, b, here_a, here_b)) {
-		//우선 두 위치가 같은 집합 내에 없어야 합칠 수 있음
-		here_b->root = here_a; // 두 노드 중, 먼저 들어온 값으로 붙임
 	}
 }
