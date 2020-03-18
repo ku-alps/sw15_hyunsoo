@@ -14,7 +14,8 @@ using namespace std;
 #define X "0121"
 #define Y "1210"
 
-int main() {	int T, N, M;
+int main() {
+	int T, N, M;
 	cin >> T;
 	while (T--) {
 		int ans = 0, keySet = 0; // 정답 값, 갖고 있는 열쇠 
