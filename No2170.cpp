@@ -1,56 +1,56 @@
 #include<iostream>
+#include<stack>
 #include<vector>
 #include<algorithm>
+#include<tuple>
 using namespace std;
 // 선 긋기
-// Line Sweeping 을 사용한 풀이법
+// 주어지는 선에 대해 중복되는 부분을 없애고 합칠 필요가 존재함
+// so, 세그먼트 트리 형식을 생각했으나 입력값의 범주가 너무 커서 불가능
 
-class Line {
-public:
-	int s, e; //시작과 끝
-	Line();
-	Line(int i_s, int i_e);
-};
+// 따라서 각 선분을 앞, 뒤를 기준으로 정렬하며
+// 중복 여부를 통해 선울 합치는 과정을 반복
+
+stack<pair<int, int>> s; // 실제로 그어질 선 집합
+vector<pair<int, int>> v; // 선을 정렬할 벡터
 
 int main() {
-	int loop;
-	vector<Line> line; // 가지고 있는 선 정보
+	ios::sync_with_stdio(false);
+	cin.tie(NULL); // 입출력 시간으로 인한 시간초과 방지
 
-	cin >> loop; //반복 횟수
-	while (loop--) {
-		int s, e;
-		cin >> s >> e;
-		line.push_back(Line(s, e));
+	int N;
+	cin >> N;
+	while (N--) { // 선분을 입력받음
+		int a, b;
+		cin >> a >> b;
+		v.emplace_back(a, b);
 	}
+	sort(v.begin(), v.end(), [](pair<int, int> a, pair<int, int> b)->bool { // 정렬
+		return a.first != b.first ? a.first < b.first : a.second < b.second;
+		});
 
-	sort(line.begin(), line.end(), [](Line a, Line b) -> bool {
-		// false 값이 들어오는 경우에만 순서를 바꿈
-		if (a.s == b.s) { // 시작점이 같은 경우
-			return a.e < b.e; // 끝 지점이 큰 놈의 경우 바꿈
-		}
-		else return a.s < b.s;
-	}); // sort 함수의 정렬 기준을 함수로 정의해줌
+	for (pair<int,int> line : v) { // 모든 선을 확인
+		if (s.empty()) s.push(line); // 스택이 빈 경우, 그냥 사용
+		else {
+			int s_a, s_b, v_a, v_b;
+			tie(s_a, s_b) = s.top(); // 현재까지 그어진 직선 중, 가장 최근을 선택
+			tie(v_a, v_b) = line; // 다음에 그을 선을 불러옴
 
-	for (int k = 0; k < line.size() - 1;) { // 정렬된 선을 합치는 과정
-		if (line[k].e >= line[k + 1].s) { // 현재 직선과 그 다음직선이 겹치는 경우
-			if (line[k].e < line[k + 1].e)  // 뒤쪽 직선이 더 있는경우
-				line[k].e = line[k + 1].e; // 연결
-			// 반대의 경우는 무시해도 됨
-			line.erase(line.begin() + k + 1); //뒤쪽 위치 삭제
+			if (s_b >= v_a) { // 두 선이 겹치는 경우
+				s.pop();
+				s.emplace(min(s_a, v_a), max(s_b, v_b)); // 두 선을 합침
+			}
+			else s.emplace(line); // 겹치지 않으면 그 자체로 사용
 		}
-		else
-			k++; //그 외의 경우, 다음 직선으로 넘어감
 	}
 
 	int ans = 0;
-	for (int k = 0; k < line.size(); k++) {
-		ans += line[k].e - line[k].s; // 길이만큼 추가
+	while (!s.empty()) { // 실제로 그어진 선을 확인하고 길이를 체크
+		int a, b;
+		tie(a, b) = s.top();
+		s.pop();
+
+		ans += b - a;
 	}
 	cout << ans << endl;
-}
-
-Line::Line(){}
-Line::Line(int i_s, int i_e){
-	s = i_s;
-	e = i_e; // 값 입력
 }
