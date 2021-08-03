@@ -15,6 +15,7 @@ public class No1244 {
 		int students = sc.nextInt();
 		for(int k=0; k<students; k++) {
 			// true 면 남학생, false 면 여학생
+			boolean isBoy = (sc.nextInt() == 1);
 			int btnNum = sc.nextInt(); // 스위치 번호
 			if(isBoy) {
 				for(int i=1; btnNum*i<=btnSize; i++) {
