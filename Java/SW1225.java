@@ -8,8 +8,9 @@ class SW1225 {
 	public static void main(String args[]) throws Exception {
 		Scanner sc = new Scanner(System.in);
 	
-		for(int test_case = 1; test_case <= 10; test_case++) {
-			sc.nextInt();
+		while(sc.hasNext()) {
+			q.clear(); // 큐 비우기
+			int test_case = sc.nextInt();
 			// 8개의 수를 입력받아서 큐에 순서대로 삽입
 			for(int k=0; k<8; k++) q.add(sc.nextInt());
 			
