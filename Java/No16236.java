@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
@@ -12,7 +11,6 @@ class No16236 {
 		int N = sc.nextInt(); // 바다의 크기
 
 		int[][] SEA = new int[N][N]; // 바다 정보
-		List<Integer[]> fish = new LinkedList<>(); // 물고기 좌표 + 크기
 		int[] babyShark = new int[4]; // 아기상어의 좌표정보 + 크기정보 + 먹은 물고기 수
 		for(int x=0; x<N; x++) {
 			for(int y=0; y<N; y++) { // 모든 좌표에 대해 정보읽기
